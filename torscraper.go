@@ -50,8 +50,6 @@ func GetAnimeTorrents(query string) ([]Torrent, string) {
 	return torrentList, ""
 }
 
-var wg sync.WaitGroup
-
 // GetMagnet is a function to get magnet links from 1337x.to
 func GetMagnet(tlink *string, wg *sync.WaitGroup) {
 	tlink1 := "https://1337x.to" + *tlink
@@ -65,7 +63,8 @@ func GetMagnet(tlink *string, wg *sync.WaitGroup) {
 }
 
 // GetTorrents is a function to get torrents from 1337x.to
-func GetTorrents(query string, wg *sync.WaitGroup) ([]Torrent, string) {
+func GetTorrents(query string) ([]Torrent, string) {
+	var wg sync.WaitGroup
 	query = Link1337 + "/search/" + strings.ReplaceAll(query, " ", "+") + "/1/"
 	res, err := http.Get(query)
 	defer res.Body.Close()
@@ -87,7 +86,7 @@ func GetTorrents(query string, wg *sync.WaitGroup) ([]Torrent, string) {
 			torSize := strings.Replace(s.Find(".size").Text(), torSeeders, "", -1)
 			torrentList = append(torrentList, Torrent{tname: tor.Text(), tlink: torLink, tseeders: torSeeders, tleechers: torLeechers, tsize: torSize})
 			wg.Add(1)
-			go GetMagnet(&torrentList[i-1].tlink, wg)
+			go GetMagnet(&torrentList[i-1].tlink, &wg)
 		}
 	})
 	wg.Wait()
