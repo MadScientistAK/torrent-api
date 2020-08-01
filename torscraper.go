@@ -45,7 +45,7 @@ func GetAnimeTorrents(query string) ([]Torrent, string) {
 		torSize := tmp.Eq(3).Text()
 		torSeeders := tmp.Eq(5).Text()
 		torLeechers := tmp.Eq(6).Text()
-		torrentList = append(torrentList, torrent{tname: tor.Text(), tlink: torUrl, tseeders: torSeeders, tleechers: torLeechers, tsize: torSize})
+		torrentList = append(torrentList, Torrent{tname: tor.Text(), tlink: torLink, tseeders: torSeeders, tleechers: torLeechers, tsize: torSize})
 	})
 	return torrentList, ""
 }
@@ -81,11 +81,11 @@ func GetTorrents(query string, wg *sync.WaitGroup) ([]Torrent, string) {
 	doc.Find("tr").Each(func(i int, s *goquery.Selection) {
 		if i > 0 {
 			tor := s.Find(".name").Find("a").Eq(1)
-			torUrl, _ := tor.Attr("href")
+			torLink, _ := tor.Attr("href")
 			torSeeders := s.Find(".seeds").Eq(0).Text()
 			torLeechers := s.Find(".leeches").Text()
 			torSize := strings.Replace(s.Find(".size").Text(), torSeeders, "", -1)
-			torrentList = append(torrentList, torrent{tname: tor.Text(), tlink: torUrl, tseeders: torSeeders, tleechers: torLeechers, tsize: torSize})
+			torrentList = append(torrentList, Torrent{tname: tor.Text(), tlink: torLink, tseeders: torSeeders, tleechers: torLeechers, tsize: torSize})
 			wg.Add(1)
 			go GetMagnet(&torrentList[i-1].tlink, wg)
 		}
