@@ -3,7 +3,7 @@ package main
 import (
 	"strings"
 
-	"github.com/MadScientistAK/torscraper"
+	"github.com/MadScientistAK/torscraper/torscraper"
 	"github.com/gofiber/fiber"
 )
 
