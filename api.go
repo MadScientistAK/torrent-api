@@ -1,6 +1,8 @@
 package main
 
 import (
+	"net/url"
+	"os"
 	"strings"
 
 	"github.com/MadScientistAK/torscraper/torscraper"
@@ -14,6 +16,7 @@ func main() {
 		tmp := c.Params("query")
 		if tmp != "" {
 			tmp = strings.ReplaceAll(tmp, "%20", "+")
+			tmp = url.QueryEscape(tmp)
 			c.Send(torscraper.GetAnimeTorrents(tmp))
 		} else {
 			c.Send("Where is the query?")
@@ -24,11 +27,19 @@ func main() {
 		tmp := c.Params("query")
 		if tmp != "" {
 			tmp = strings.ReplaceAll(tmp, "%20", "+")
+			tmp = url.QueryEscape(tmp)
 			c.Send(torscraper.GetTorrents(tmp))
 		} else {
 			c.Send("Where is the query?")
 		}
 	})
 
-	app.Listen(3000)
+	port := os.Getenv("PORT")
+	defaultPort := "8080"
+
+	if port == "" {
+		app.Listen(defaultPort)
+	} else {
+		app.Listen(port)
+	}
 }
