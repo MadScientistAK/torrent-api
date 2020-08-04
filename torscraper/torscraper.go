@@ -11,11 +11,11 @@ import (
 
 // Torrent is a struct to hold torrent data
 type Torrent struct {
-	tname     string `json:"TorrentName"`
-	tlink     string `json:"MagnetLink"`
-	tseeders  string `json:"Seeders"`
-	tleechers string `json:"Leechers"`
-	tsize     string `json:"Size"`
+	Tname     string `json:"Name"`
+	Tlink     string `json:"Magnetlink"`
+	TSeeders  string `json:"Seeders"`
+	TLeechers string `json:"Leechers"`
+	TSize     string `json:"Size"`
 }
 
 var Link1337 string = "https://1337x.to"
@@ -45,20 +45,20 @@ func GetAnimeTorrents(query string) ([]Torrent, string) {
 		torSize := tmp.Eq(3).Text()
 		torSeeders := tmp.Eq(5).Text()
 		torLeechers := tmp.Eq(6).Text()
-		torrentList = append(torrentList, Torrent{tname: tor.Text(), tlink: torLink, tseeders: torSeeders, tleechers: torLeechers, tsize: torSize})
+		torrentList = append(torrentList, Torrent{Tname: tor.Text(), Tlink: torLink, TSeeders: torSeeders, TLeechers: torLeechers, TSize: torSize})
 	})
 	return torrentList, ""
 }
 
 // GetMagnet is a function to get magnet links from 1337x.to
-func GetMagnet(tlink *string, wg *sync.WaitGroup) {
-	tlink1 := "https://1337x.to" + *tlink
-	res, _ := http.Get(tlink1)
+func GetMagnet(Tlink *string, wg *sync.WaitGroup) {
+	Tlink1 := "https://1337x.to" + *Tlink
+	res, _ := http.Get(Tlink1)
 	defer res.Body.Close()
 
 	doc, _ := goquery.NewDocumentFromReader(res.Body)
 	t, _ := doc.Find(".clearfix").Eq(2).Find("a").Attr("href")
-	*tlink = t
+	*Tlink = t
 	defer wg.Done()
 }
 
@@ -84,9 +84,9 @@ func GetTorrents(query string) ([]Torrent, string) {
 			torSeeders := s.Find(".seeds").Eq(0).Text()
 			torLeechers := s.Find(".leeches").Text()
 			torSize := strings.Replace(s.Find(".size").Text(), torSeeders, "", -1)
-			torrentList = append(torrentList, Torrent{tname: tor.Text(), tlink: torLink, tseeders: torSeeders, tleechers: torLeechers, tsize: torSize})
+			torrentList = append(torrentList, Torrent{Tname: tor.Text(), Tlink: torLink, TSeeders: torSeeders, TLeechers: torLeechers, TSize: torSize})
 			wg.Add(1)
-			go GetMagnet(&torrentList[i-1].tlink, &wg)
+			go GetMagnet(&torrentList[i-1].Tlink, &wg)
 		}
 	})
 	wg.Wait()

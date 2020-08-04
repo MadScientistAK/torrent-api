@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"net/url"
 	"os"
 	"strings"
@@ -17,7 +18,9 @@ func main() {
 		if tmp != "" {
 			tmp = strings.ReplaceAll(tmp, "%20", "+")
 			tmp = url.QueryEscape(tmp)
-			c.Send(torscraper.GetAnimeTorrents(tmp))
+			tmp1, _ := torscraper.GetAnimeTorrents(tmp)
+			tmp2, _ := json.Marshal(tmp1)
+			c.Send(tmp2)
 		} else {
 			c.Send("Where is the query?")
 		}
@@ -28,7 +31,9 @@ func main() {
 		if tmp != "" {
 			tmp = strings.ReplaceAll(tmp, "%20", "+")
 			tmp = url.QueryEscape(tmp)
-			c.Send(torscraper.GetTorrents(tmp))
+			tmp1, _ := torscraper.GetTorrents(tmp)
+			tmp2, _ := json.Marshal(tmp1)
+			c.Send(tmp2)
 		} else {
 			c.Send("Where is the query?")
 		}
