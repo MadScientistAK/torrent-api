@@ -23,10 +23,6 @@ func main() {
 		}
 	})
 
-	app.Get("/*", func(c *fiber.Ctx) {
-		c.Send("This isn't how this is supposed to be used. Usage examples: \n\nSearch for Far Cry on 1337x.to - torscraper.herokuapp.com/search1337/Far Cry \nSearch for Dragon Ball on nyaa.si - torscraper.herokuapp.com/searchNyaa/Dragon Ball")
-	})
-
 	app.Get("/search1337/:query?", func(c *fiber.Ctx) {
 		tmp := c.Params("query")
 		if tmp != "" {
@@ -36,6 +32,10 @@ func main() {
 		} else {
 			c.Send("Where is the query?")
 		}
+	})
+
+	app.Get("/*", func(c *fiber.Ctx) {
+		c.Send("This isn't how this is supposed to be used. Usage examples: \n\nSearch for Far Cry on 1337x.to - torscraper.herokuapp.com/search1337/Far Cry \nSearch for Dragon Ball on nyaa.si - torscraper.herokuapp.com/searchNyaa/Dragon Ball")
 	})
 
 	port := os.Getenv("PORT")
