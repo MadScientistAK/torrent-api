@@ -20,6 +20,7 @@ type Torrent struct {
 
 var Link1337 string = "https://1337x.to"
 var LinkNyaa string = "https://nyaa.si"
+var wg sync.WaitGroup
 
 // GetAnimeTorrents is a function to get English translated Anime from Nyaa.si
 func GetAnimeTorrents(query string) ([]Torrent, string) {
@@ -51,20 +52,19 @@ func GetAnimeTorrents(query string) ([]Torrent, string) {
 }
 
 // GetMagnet is a function to get magnet links from 1337x.to
-func GetMagnet(Tlink *string, wg *sync.WaitGroup) {
+func GetMagnet(Tlink *string) {
+	defer wg.Done()
 	Tlink1 := "https://1337x.to" + *Tlink
 	res, _ := http.Get(Tlink1)
 	defer res.Body.Close()
 
 	doc, _ := goquery.NewDocumentFromReader(res.Body)
-	t, _ := doc.Find(".clearfix").Eq(2).Find("a").Attr("href")
+	t, _ := doc.Find(".col-9.page-content").Find("a").Attr("href")
 	*Tlink = t
-	defer wg.Done()
 }
 
 // GetTorrents is a function to get torrents from 1337x.to
 func GetTorrents(query string) ([]Torrent, string) {
-	var wg sync.WaitGroup
 	query = Link1337 + "/search/" + strings.ReplaceAll(query, " ", "+") + "/1/"
 	res, err := http.Get(query)
 	defer res.Body.Close()
@@ -85,8 +85,7 @@ func GetTorrents(query string) ([]Torrent, string) {
 			torLeechers := s.Find(".leeches").Text()
 			torSize := strings.Replace(s.Find(".size").Text(), torSeeders, "", -1)
 			torrentList = append(torrentList, Torrent{Tname: tor.Text(), Tlink: torLink, TSeeders: torSeeders, TLeechers: torLeechers, TSize: torSize})
-			wg.Add(1)
-			go GetMagnet(&torrentList[i-1].Tlink, &wg)
+			go GetMagnet(&torrentList[i-1].Tlink)
 		}
 	})
 	wg.Wait()
