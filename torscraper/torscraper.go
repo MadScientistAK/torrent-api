@@ -85,6 +85,7 @@ func GetTorrents(query string) ([]Torrent, string) {
 			torLeechers := s.Find(".leeches").Text()
 			torSize := strings.Replace(s.Find(".size").Text(), torSeeders, "", -1)
 			torrentList = append(torrentList, Torrent{Tname: tor.Text(), Tlink: torLink, TSeeders: torSeeders, TLeechers: torLeechers, TSize: torSize})
+			wg.Add(1)
 			go GetMagnet(&torrentList[i-1].Tlink)
 		}
 	})
