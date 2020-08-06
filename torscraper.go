@@ -119,7 +119,7 @@ func main() {
 			tmp1, _ := GetTorrents(tmp)
 			wg.Add(len(tmp1))
 			for i := range tmp1 {
-				GetMagnet(&tmp1[i].Tlink)
+				go GetMagnet(&tmp1[i].Tlink)
 			}
 			wg.Wait()
 			tmp2, _ := json.Marshal(tmp1)
